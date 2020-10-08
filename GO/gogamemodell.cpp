@@ -1,13 +1,13 @@
 #include "gogamemodell.h"
 
-GoGameModell::GoGameModell()
+GoGameModell::GoGameModell(BoardSize boardSize, int stepCount)
 {
+    this->boardSize = boardSize;
+    this->stepCount = stepCount * 2;
     this->groups = new QVector<QSet<Field*>*>();
     this->board = new Field*[this->boardSize];
     for (int i = 0; i < this->boardSize; ++i)
-    {
         this->board[i] = new Field[this->boardSize];
-    }
 }
 
 GoGameModell::~GoGameModell()
@@ -15,69 +15,116 @@ GoGameModell::~GoGameModell()
 
 }
 
-void GoGameModell::step(int x, int y)
+void GoGameModell::placeStone(const int x,const int y)
 {
-    if(x < this->boardSize && y < this->boardSize)
-    {
-        board[x][y].fieldType = activePlayer ? Black : White;
+    this->board[x][y].fieldType = this->activePlayer ? Black : White;
+    --stepCount;
+}
 
-        --board[x-1][y].health;
-        --board[x+1][y].health;
-        --board[x][y-1].health;
-        --board[x][y+1].health;
+void GoGameModell::manageHealth(int x, int y)
+{
+    if(x != 0)
+        --this->board[x-1][y].health;
 
-        QSet<Field*>* actualGroup;
-        for(int i = x-1; i <= x+1; i+=2)
-            for(int j = y-1; j <= y+1; j+=2)
-                if(board[i][j].fieldType == board[x][y].fieldType)
-                {
-                    int k = 0;
-                    for(; !(*groups)[k]->contains(&board[i][j]); ++k);
-                    if(actualGroup == nullptr)
-                    {
-                        actualGroup = (*groups)[k];
-                        *actualGroup += &board[x][y];
-                    }
-                    else
-                    {
-                        *actualGroup += *(*groups)[k];
-                    }
-                }
-        if(actualGroup == nullptr)
-        {
-            actualGroup = new QSet<Field*>();
-            *actualGroup += &board[x][y];
-            groups->push_back(actualGroup);
-        }
+    if(x != boardSize - 1)
+        --this->board[x+1][y].health;
 
-        for(int i = 0; i < groups->size(); ++i)
-        {
-            bool isAllZeroHealth = true;
-            for(Field* item : *(*groups)[i])
+    if(y != 0)
+        --this->board[x][y-1].health;
+
+    if(y != boardSize - 1)
+        --this->board[x][y+1].health;
+}
+
+void GoGameModell::manageAllHealths()
+{
+    for(int i = 0; i < this->boardSize; ++i)
+        for(int j = 0; j < this->boardSize; ++j)
+            this->board[i][j].health = 4;
+
+    for(int i = 0; i < this->boardSize; ++i)
+        for(int j = 0; j < this->boardSize; ++j)
+            if(!this->board[i][j].fieldType)
+                manageHealth(i, j);
+}
+
+void GoGameModell::manageGroups(const int x, const int y)
+{
+    QSet<Field*>* actualGroup;
+    for(int i = x-1; i <= x+1 && 0 <= i && i < boardSize; i+=2)
+        for(int j = y-1; j <= y+1 && 0 <= y && i < boardSize; j+=2)
+            if(board[i][j].fieldType == board[x][y].fieldType)
             {
-                if (!isAllZeroHealth) break;
-                isAllZeroHealth &= !item->health;
-            }
-            if(isAllZeroHealth)
-            {
-                if((*groups)[i]->values()[0]->fieldType == White) // values is modern toList.
+                int k = 0;
+                for(; !(*groups)[k]->contains(&board[i][j]); ++k);
+                if(actualGroup == nullptr)
                 {
-                    blackScore += (*groups)[i]->size();
+                    actualGroup = (*groups)[k];
+                    *actualGroup += &board[x][y];
                 }
                 else
                 {
-                    whiteScore += (*groups)[i]->size();
+                    *actualGroup += *(*groups)[k];
                 }
-                for(Field* item : *(*groups)[i])
-                {
-                    item->fieldType = Empty;
-                }
-                delete (*groups)[i];
-                (*groups)[i] = (*groups).last();
-                groups->pop_back();
             }
-        }
+    if(actualGroup == nullptr)
+    {
+        actualGroup = new QSet<Field*>();
+        *actualGroup += &board[x][y];
+        groups->push_back(actualGroup);
+    }
+}
 
-        activePlayer = activePlayer ? BlackPlayer : WhitePlayer;
+bool GoGameModell::freeSurroundedGroups()
+{
+    bool isStonesCaptured = false;
+    for(int i = 0; i < groups->size(); ++i)
+    {
+        bool isAllZeroHealth = true;
+        for(Field* item : *(*groups)[i])
+        {
+            if (!isAllZeroHealth) break;
+            isAllZeroHealth &= !item->health;
+        }
+        isStonesCaptured |= isAllZeroHealth;
+        if(isAllZeroHealth)
+        {
+            if((*groups)[i]->values()[0]->fieldType == White) // values is modern toList.
+            {
+                blackScore += (*groups)[i]->size();
+            }
+            else
+            {
+                whiteScore += (*groups)[i]->size();
+            }
+            for(Field* item : *(*groups)[i])
+            {
+                item->fieldType = Empty;
+            }
+            delete (*groups)[i];
+            (*groups)[i] = (*groups).last();
+            groups->pop_back();
+            --i;
+        }
+    }
+    return isStonesCaptured;
+}
+
+void GoGameModell::step(int x, int y)
+{
+    if(x < this->boardSize && y < this->boardSize && !board[x][y].fieldType)
+    {
+        placeStone(x, y);
+
+        manageHealth(x, y);
+
+        manageGroups(x, y);
+
+        bool isStonesCaptured = freeSurroundedGroups();
+
+        if(isStonesCaptured)
+            manageAllHealths();
+
+        activePlayer = activePlayer ? WhitePlayer : BlackPlayer;
     }
 }

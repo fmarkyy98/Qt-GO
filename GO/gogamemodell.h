@@ -10,9 +10,9 @@
 class GoGameModell : public QObject
 {
 public:
-    GoGameModell();
+    GoGameModell(const BoardSize boardSize = Medium, int stepCount = 30);
     ~GoGameModell();
-    void step(int, int);
+    void step(int x, int y);
 
 signals:
     void boardChanged() { }
@@ -25,9 +25,13 @@ private:
     QVector<QSet<Field*>*>* groups;
     int whiteScore = 0;
     int blackScore = 0;
+    int stepCount = 30;
 
-    void move();
-
+    void placeStone(const int x, const int y);
+    void manageGroups(const int x, const int y);
+    void manageHealth(const int x, const int y);
+    void manageAllHealths();
+    bool freeSurroundedGroups();
 };
 
 #endif // GOGAMEMODELL_H
