@@ -13,70 +13,148 @@
   <property name="windowTitle">
    <string>GoGameView</string>
   </property>
-  <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>841</width>
-     <height>791</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="main_verticalLayout">
-    <item>
-     <layout class="QHBoxLayout" name="controllsPushButtons_horizontalLayout">
-      <item>
-       <widget class="QPushButton" name="newGame_pushButton">
-        <property name="font">
-         <font>
-          <family>Calibri</family>
-          <pointsize>32</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>NewGame</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="saveGame_pushButton">
-        <property name="font">
-         <font>
-          <family>Calibri</family>
-          <pointsize>32</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>SaveGame</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="loadGame_pushButton">
-        <property name="font">
-         <font>
-          <family>Calibri</family>
-          <pointsize>32</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>LoadGame</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QGridLayout" name="playground_gridLayout"/>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="main_verticalLayout" stretch="0,0">
+     <item>
+      <layout class="QGridLayout" name="controllsPushButtons_gridLayout">
+       <item row="1" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QLabel" name="blackScoreText_label">
+           <property name="text">
+            <string>Black score:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="blackScoreValue_label">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="loadGame_pushButton">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>32</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>LoadGame</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="whiteScoreText_label">
+           <property name="text">
+            <string>White score:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="whiteScoreValue_label">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="newGame_pushButton">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>32</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>NewGame</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="saveGame_pushButton">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>32</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>SaveGame</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QLabel" name="nextPlayerValue_label">
+           <property name="text">
+            <string>White</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="nextPlayerText_label">
+           <property name="text">
+            <string>Next player:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="remainingStepsText_label">
+           <property name="text">
+            <string>Remaining steps:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="remainingStepsValue_label">
+           <property name="text">
+            <string>60</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="playground_gridLayout">
+       <property name="verticalSpacing">
+        <number>6</number>
+       </property>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
