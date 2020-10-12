@@ -20,7 +20,7 @@ public:
     void step(int x, int y);
     bool saveGame(int gameIndex);
     bool loadGame(int gameIndex);
-    void request();
+    void requestData();
 
     QVector<QString> saveGameList() const;
 

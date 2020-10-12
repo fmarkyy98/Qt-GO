@@ -8,6 +8,7 @@
 #include "gogamemodell.h"
 #include "savegamedialog.h"
 #include "loadgamedialog.h"
+#include "newgamedialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class GoGameView; }
@@ -25,6 +26,7 @@ private slots:
     void resizeGrid();
     void step();
     void updateUi(FieldType** visibleBoard, Player activePlayer, int whiteScore, int blackScore, int remainingSteps);
+    void newGame();
     void on_newGame_pushButton_clicked();
     void saveGame();
     void on_saveGame_pushButton_clicked();
@@ -33,9 +35,10 @@ private slots:
 
 private:
     Ui::GoGameView *ui;
-    GoGameModell goGameModell;
+    GoGameModell* goGameModell;
     QVector<QPushButton*> buttonVector;
     SaveGameDialog* saveGameDialog = nullptr;
     LoadGameDialog* loadGameDialog = nullptr;
+    NewGameDialog* newGameDialog = nullptr;
 };
 #endif // GOGAMEVIEW_H

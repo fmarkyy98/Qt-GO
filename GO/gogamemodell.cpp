@@ -214,7 +214,7 @@ bool GoGameModell::loadGame(int gameIndex)
     return true;
 }
 
-void GoGameModell::request()
+void GoGameModell::requestData()
 {
     emit boardChanged(convertToVisibleBoard(board), activePlayer, whiteScore, blackScore, remainingStepCount);
 }

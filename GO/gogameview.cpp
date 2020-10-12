@@ -6,8 +6,9 @@
 GoGameView::GoGameView(QWidget *parent) : QWidget(parent), ui(new Ui::GoGameView)
 {
     ui->setupUi(this);
+    goGameModell = new GoGameModell();
     resizeGrid();
-    connect(&goGameModell, SIGNAL(boardChanged(FieldType**, Player, int, int, int)),
+    connect(goGameModell, SIGNAL(boardChanged(FieldType**, Player, int, int, int)),
              this,           SLOT(updateUi(FieldType**, Player, int, int, int)));
 }
 
@@ -24,9 +25,9 @@ void GoGameView::resizeGrid()
         delete item;
     }
     buttonVector.clear();
-    for(int i = 0; i < goGameModell.getBoardSize(); ++i)
+    for(int i = 0; i < goGameModell->getBoardSize(); ++i)
     {
-        for(int j = 0; j < goGameModell.getBoardSize(); ++j)
+        for(int j = 0; j < goGameModell->getBoardSize(); ++j)
         {
             QPushButton* button = new QPushButton(this);
             buttonVector.push_back(button);
@@ -40,9 +41,9 @@ void GoGameView::step()
 {
     QPushButton* senderButton = (QPushButton*)sender();
     int coardinate = ui->playground_gridLayout->indexOf(senderButton);
-    int x = coardinate / goGameModell.getBoardSize();
-    int y = coardinate % goGameModell.getBoardSize();
-    goGameModell.step(x, y);
+    int x = coardinate / goGameModell->getBoardSize();
+    int y = coardinate % goGameModell->getBoardSize();
+    goGameModell->step(x, y);
 }
 
 void GoGameView::updateUi(FieldType** visibleBoard, Player activePlayer, int whiteScore, int blackScore, int remainingSteps)
@@ -51,7 +52,7 @@ void GoGameView::updateUi(FieldType** visibleBoard, Player activePlayer, int whi
     ui->whiteScoreValue_label->setText(QString::number(whiteScore));
     ui->blackScoreValue_label->setText(QString::number(blackScore));
     ui->remainingStepsValue_label->setText(QString::number(remainingSteps));
-    int n = goGameModell.getBoardSize();
+    int n = goGameModell->getBoardSize();
     for(int i = 0; i < n; ++i)
         for(int j = 0; j < n; ++j)
         {
@@ -64,18 +65,33 @@ void GoGameView::updateUi(FieldType** visibleBoard, Player activePlayer, int whi
         }
 }
 
+void GoGameView::newGame()
+{
+    delete goGameModell;
+    goGameModell = new GoGameModell((BoardSize)newGameDialog->getSize(), newGameDialog->getSteps());
+    connect(goGameModell, SIGNAL(boardChanged(FieldType**, Player, int, int, int)),
+             this,           SLOT(updateUi(FieldType**, Player, int, int, int)));
+    resizeGrid();
+    goGameModell->requestData();
+}
+
 void GoGameView::on_newGame_pushButton_clicked()
 {
-
+    if (newGameDialog == nullptr)
+    {
+        newGameDialog = new NewGameDialog();
+        connect(newGameDialog, SIGNAL(accepted()), this, SLOT(newGame()));
+    }
+    newGameDialog->open();
 }
 
 void GoGameView::saveGame()
 {
     // elmentjük a kiválasztott játékot
 
-    if (goGameModell.saveGame(saveGameDialog->selectedGame()))
+    if (goGameModell->saveGame(saveGameDialog->selectedGame()))
     {
-        goGameModell.request();
+        goGameModell->requestData();
         QMessageBox::information(this, trUtf8("GO"), trUtf8("Játék sikeresen mentve!"));
     }
     else
@@ -91,16 +107,17 @@ void GoGameView::on_saveGame_pushButton_clicked()
         saveGameDialog = new SaveGameDialog();
         connect(saveGameDialog, SIGNAL(accepted()), this, SLOT(saveGame()));
     }
-    saveGameDialog->setGameList(goGameModell.saveGameList());
+    saveGameDialog->setGameList(goGameModell->saveGameList());
     saveGameDialog->open();
 }
 
 void GoGameView::loadGame()
 {
     // betöltjük a kiválasztott játékot
-    if (goGameModell.loadGame(loadGameDialog->selectedGame()))
+    if (goGameModell->loadGame(loadGameDialog->selectedGame()))
     {
-        goGameModell.request();
+        resizeGrid();
+        goGameModell->requestData();
         QMessageBox::information(this, trUtf8("JO"), trUtf8("Játék betöltve!"));
     }
     else
@@ -118,6 +135,6 @@ void GoGameView::on_loadGame_pushButton_clicked()
     }
 
     // beállítjuk a listát, és megnyitjuk az ablakot
-    loadGameDialog->setGameList(goGameModell.saveGameList());
+    loadGameDialog->setGameList(goGameModell->saveGameList());
     loadGameDialog->open();
 }
